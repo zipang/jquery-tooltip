@@ -1,5 +1,6 @@
 <html>
 <head>
+    <meta charset="utf-8">
 	<title>the Last Tooltip Before the End of the World</title>
 
 	<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
@@ -20,15 +21,15 @@
 			padding: 0.8em;
 		}
 	</style>
-</head>	
+</head>
 <body>
 	<h1>A jQuery plugin that give you tips</h1>
 	<img src="spacecruiser.png" data-tooltip="I'm your tool. Do you have a tip?" width="200">
 
 	<script>
 	$(function onload() {
-		$("img").tooltip();
-	});			
+		$("img").tooltip({position: "top"});
+	});
 	</script>
 </body>
 </html>
