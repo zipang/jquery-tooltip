@@ -62,7 +62,11 @@
 			    	.html(title).data("state", "hidden")
 			    	.hide().insertAfter($target),
 			    appear = function() {
-			    	_positionTooltip($tooltip, $target, options.position);
+					if (typeof options.position == "function") {
+						options.position($tooltip, $target);
+					} else {
+						_positionTooltip($tooltip, $target, options.position);
+					}
 			    	$tooltip.fadeIn(options.fadeIn, function() {
 			    		$tooltip.data("state", "visible");
 			    	});
