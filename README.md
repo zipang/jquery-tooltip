@@ -11,17 +11,18 @@ Usage Examples
 ```
 
 ```js
-	// the most simple call with default options :
-	// delay (before appearance) : 500 ms
-	// apparition : fadeIn (1 s)
-	// disparition : fadeOut (500 ms)
+	/** the most simple call with default options :
+	 * @delay (before appearance) : 500 ms
+	 * @apparition : fadeIn (1 s)
+	 * @disparition : fadeOut (500 ms)
+	 */ 
 	$("h1").tooltip();
 
 	// this call is equivalent to :
 	$("h1").tooltip(500, 1000, 500);
 
 	// or
-	$("h1").tooltip({delay: 500, {fadeIn: 1000}, {fadeOut: 500});		
+	$("h1").tooltip({delay: 500, fadeIn: 1000, fadeOut: 500});		
 ```
 
 Licence
