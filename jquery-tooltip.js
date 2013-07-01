@@ -1,23 +1,23 @@
 (function() {
-	var defaults = {
+	var _DEFAULTS = {
 		delay: 500, // 500ms
 		fadeIn: 1000,
 		fadeOut: 500,
 		position: "bottom",
-		extract: extractTooltip
+		extract: _extractTooltip
 	};
 
 	// UTILITY METHODS
-	function positionTooltip($tooltip, $target, method) {
+	function _positionTooltip($tooltip, $target, method) {
 		var targetPosition = $target.offset();
 		if (method == "top") {
-			$tooltip.css({
+			$tooltip.addClass("top").css({
 				position: "absolute",
 				top: (targetPosition.top - $tooltip.height() - 5) + "px",
 				left: (targetPosition.left + ($target.width() / 2) - ($tooltip.width() / 2)) + "px"
 			});
 		} else if (method == "bottom") {
-			$tooltip.css({
+			$tooltip.addClass("bottom").css({
 				position: "absolute",
 				top: (targetPosition.top + $target.height() + $tooltip.height() + 5) + "px",
 				left: (targetPosition.left + ($target.width() / 2) - ($tooltip.width() / 2)) + "px"
@@ -25,24 +25,36 @@
 		}
 	}
 
-	function extractTooltip($target) {
-		return $target.attr("title") || $target.data("tooltip");
+	function _extractTooltip($target) {
+		var txt = $target.attr("title") || $target.data("tooltip");
+		$target.removeAttr('title'); // prevent conflict with js tooltip
+		return txt;
 	}
 
 
-	// MAIN PLUGIN DEFINITION
+	/**
+	 * Prepare tooltips for target elements
+	 *
+	 * Passing explicit parameters like that
+	 * @param {Number|String} delay in ms before appearance or jquery delay value ("fast", "slow", ..) : default 500ms
+	 * @param {Number|String} apparition : (fadeIn, default 1s)
+	 * @param {Number|String} disparition : (fadeOut, default 500ms)
+	 *
+	 * Or all in ones :
+	 * @param {Object} options
+ 	 */
 	$.fn.tooltip = function(delay, fadeIn, fadeOut) {
 
 		var options = $.extend(
-			{}, defaults, 
+			{}, _DEFAULTS,
 			(typeof delay == "object")
 				? delay
 				: {delay: delay, fadeIn: fadeIn, fadeOut: fadeOut}
 		);
-		
-		$(this).each(function(i, target) {
-			var $target = $(target), 
-			    title = extractTooltip($target);
+
+		return $(this).each(function(i, target) {
+			var $target = $(target),
+			    title = _extractTooltip($target);
 
 			if (!title) return true; // continue to the next target element
 
@@ -50,7 +62,7 @@
 			    	.html(title).data("state", "hidden")
 			    	.hide().insertAfter($target),
 			    appear = function() {
-			    	positionTooltip($tooltip, $target, options.position);
+			    	_positionTooltip($tooltip, $target, options.position);
 			    	$tooltip.fadeIn(options.fadeIn, function() {
 			    		$tooltip.data("state", "visible");
 			    	});
@@ -65,7 +77,7 @@
 				function () {
 					if ($tooltip.data("state") == "hidden") {
 						$tooltip.data("state", "wait")
-						setTimeout(appear, options.delay);	
+						setTimeout(appear, options.delay);
 					}
 
 				}, function () {
@@ -77,7 +89,6 @@
 					}
 				}
 			);
-
 		});
 	};
 })();
