@@ -3,8 +3,6 @@
     <meta charset="utf-8">
 	<title>the Last Tooltip Before the End of the World</title>
 
-	<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
-	<script type="text/javascript" src="jquery-tooltip.js"></script>
 	<style>
 		body {
 			margin: 1em 10em;
@@ -12,6 +10,11 @@
 		img {
 			border: 10px solid #ddd;
 		}
+        a.iconic {
+            display: block; overflow: hidden;
+            background: url(spacecruiser.png) no-repeat;
+            width: 64px; height: 64px;
+        }
 		.tooltip {
 			font-family: Georgia;
 			font-size: 16px;
@@ -24,11 +27,14 @@
 </head>
 <body>
 	<h1>A jQuery plugin that give you tips</h1>
+    <a href="https://github.com/zipang/jquery-tooltip" title="jQuery tooltip" class="iconic"></a>
 	<img src="spacecruiser.png" data-tooltip="I'm your tool. Do you have a tip?" width="200">
 
+    <script src="http://code.jquery.com/jquery.min.js"></script>
+    <script src="jquery-tooltip.js"></script>
 	<script>
 	$(function onload() {
-		$("img").tooltip({position: "top"});
+		$("img, a").tooltip({position: "top"});
 	});
 	</script>
 </body>

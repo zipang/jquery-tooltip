@@ -1,4 +1,4 @@
-(function() {
+(function($) {
 	var _DEFAULTS = {
 		delay: 500, // 500ms
 		fadeIn: 1000,
@@ -95,4 +95,4 @@
 			);
 		});
 	};
-})();
+})(jQuery);
