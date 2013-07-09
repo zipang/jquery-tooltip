@@ -26,9 +26,16 @@
 	}
 
 	function _extractTooltip($target) {
-		var txt = $target.attr("title") || $target.data("tooltip");
-		$target.removeAttr('title'); // prevent conflict with js tooltip
-		return txt;
+		var $tooltip = $target.find(".tooltip");
+
+		if ($tooltip.length == 0) {
+			var txt = $target.attr("title") || $target.data("tooltip");
+			if (!txt) return false;
+
+			$target.removeAttr('title'); // prevent conflict with js tooltip
+			$tooltip = $("<div>").addClass("tooltip").text(txt);
+		}
+		return $tooltip.data("state", "hidden").hide().insertAfter($target);
 	}
 
 
@@ -54,14 +61,11 @@
 
 		return $(this).each(function(i, target) {
 			var $target = $(target),
-			    title = _extractTooltip($target);
+				$tooltip = (typeof options.tooltip == "function") ? options.tooltip($target) : _extractTooltip($target);
 
-			if (!title) return true; // continue to the next target element
+			if (!$tooltip) return true; // continue to the next target element
 
-			var $tooltip = $("<div>").addClass("tooltip")
-			    	.html(title).data("state", "hidden")
-			    	.hide().insertAfter($target),
-			    appear = function() {
+			var appear = function() {
 					if (typeof options.position == "function") {
 						options.position($tooltip, $target);
 					} else {
