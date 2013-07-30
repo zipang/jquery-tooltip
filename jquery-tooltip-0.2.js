@@ -1,3 +1,8 @@
+/**
+ * jQuery Tooltip 0.2
+ * CHANGELOG : 0.2
+ * Adds a public API to control the tooltip
+ */
 (function($) {
 	var _DEFAULTS = {
 		delay: 500, // 500ms
@@ -41,17 +46,57 @@
 	/**
 	 *
 	 * @param $elt
+	 * @param options
 	 * @constructor
 	 */
-	function Tooltip($elt) {
+	function Tooltip($target, $elt, options) {
+		this.$target = $target;
 		this.$elt = $elt;
+		this.options = options;
 	}
 	Tooltip.prototype = {
-		pin: function() {
-			return this.$elt.data("state", "pinned");
+		onMouseEnter: function () {
+			var $tooltip = this.$elt, options = this.options;
+			if ($tooltip.data("state") == "hidden") {
+				$tooltip.data("state", "wait")
+				setTimeout(appear, options.delay);
+			}
+		},
+		onMouseLeave: function () {
+			var state = $tooltip.data("state");
+			if (state == "pinned") return;
+			if (state == "wait") {
+				$tooltip.data("state", "hidden");
+			} else {
+				disappear();
+			}
+		},
+		appear: function() {
+			var $target = this.$target, $tooltip = this.$elt, options = this.options;
+			if (typeof options.position == "function") {
+				options.position($tooltip, $target);
+			} else {
+				_positionTooltip($tooltip, $target, options.position);
+			}
+			$tooltip.fadeIn(options.fadeIn, function() {
+				$tooltip.data("state", "visible");
+			});
+		},
+		disappear: function() {
+			this.$elt.fadeOut(this.options.fadeOut, function() {
+				this.$elt.data("state", "hidden");
+			});
+			return this;
+		},
+		pin: function(ysn) {
+			// change state to 'pinned' so that hover event won't change the visibility of the tooltip
+			this.$elt.data("state", (ysn === false) ? "visible" : "pinned");
+			return this.appear();
 		},
 		unpin: function() {
-			return this.$elt.data("state", "visible");
+			// restore state to visible
+			this.$elt.data("state", "visible");
+			return this.disappear();
 		}
 	};
 
@@ -66,7 +111,7 @@
 	 *
 	 * Or all in ones :
 	 * @param {Object} options
- 	 */
+	 */
 	$.fn.tooltip = function(delay, fadeIn, fadeOut) {
 
 		var options = $.extend(
@@ -82,39 +127,15 @@
 
 			if (!$tooltip) return true; // continue to the next target element
 
-			var appear = function() {
-					if (typeof options.position == "function") {
-						options.position($tooltip, $target);
-					} else {
-						_positionTooltip($tooltip, $target, options.position);
-					}
-			    	$tooltip.fadeIn(options.fadeIn, function() {
-			    		$tooltip.data("state", "visible");
-			    	});
-			    },
-			    disappear = function() {
-			    	$tooltip.fadeOut(options.fadeOut, function() {
-			    		$tooltip.data("state", "hidden");
-			    	});
-			    };
+			var tooltip = new Tooltip($target, $tooltip, options),
+				onMouseEnter = function() {
+					tooltip.onMouseEnter();
+				},
+				onMouseLeave = function() {
+					tooltip.onMouseLeave();
+				};
 
-			$target.data("tooltip", new Tooltip($tooltip)).hover(
-				function () {
-					if ($tooltip.data("state") == "hidden") {
-						$tooltip.data("state", "wait")
-						setTimeout(appear, options.delay);
-					}
-
-				}, function () {
-					var state = $tooltip.data("state");
-					if (state == "pinned") return;
-					if (state == "wait") {
-						$tooltip.data("state", "hidden");
-					} else {
-						disappear();
-					}
-				}
-			);
+			$target.data("tooltip", tooltip).hover(onMouseEnter, onMouseLeave);
 		});
 	};
 })(jQuery);
